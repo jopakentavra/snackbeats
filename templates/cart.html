@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Grozs - SnackBeats{% endblock %}
+
+{% block content %}
+<h2 style="text-align:center;">🛒 Tavs grozs</h2>
+
+{% if cart_items %}
+<form method="POST" action="{{ url_for('update_cart') }}">
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Produkts</th>
+                <th>Daudzums</th>
+                <th>Cena (EUR)</th>
+                <th>Kopā</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>
+                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0">
+                </td>
+                <td>{{ "%.2f"|format(item.cena) }}</td>
+                <td>{{ "%.2f"|format(item.total) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="cart-footer">
+        <strong>Kopējā summa: {{ "%.2f"|format(total) }} €<br><br>
+        <button type="submit">🔁 Atjaunināt grozu</button>
+        <a href="/produkti">⬅ Turpināt iepirkšanos</a>
+    </div>
+</form>
+{% else %}
+    <p style="text-align:center;">Tavs grozs ir tukšs. 😢</p>
+    <div style="text-align:center;"><a href="/produkti">Skatīt produktus</a></div>
+{% endif %}
+{% endblock %}

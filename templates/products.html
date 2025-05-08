@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Produkti - SnackBeats{% endblock %}
+{% block content %}
+<h2 style="text-align: center;">Produkti</h2>
+<div class="category-menu">
+    <a href="{{ url_for('products', category='all') }}"
+       class="{% if selected_category == 'all' %}active{% endif %}">Skatīties visu</a>
+
+    {% for cat in categories %}
+        <a href="{{ url_for('products', category=cat['id']) }}"
+           class="{% if selected_category == cat['id']|string %}active{% endif %}">
+            {{ cat['name'] }}
+        </a>
+    {% endfor %}
+</div>
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <a href="/produkti/{{ product['id'] }}">
+            <img src="{{ url_for('static', filename='images/products/' + product['image']) }}"
+                 alt="{{ product['name'] }}">
+            <h3>{{ product['name'] }}</h3>
+        </a>
+        <p>{{ product['cena'] }} €</p>
+
+        <form method="POST" action="{{ url_for('add_to_cart', product_id=product['id']) }}">
+            <label for="quantity">Daudzums:</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" class="cart-qty-input">
+            <button type="submit" class="add-to-cart-btn">🛒 Pievienot grozam</button>
+        </form>
+        
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

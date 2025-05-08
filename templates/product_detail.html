@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ product['name'] }} - SnackBeats{% endblock %}
+{% block content %}
+<div class="product-detail-container">
+
+    <!-- Gallery -->
+    <div class="image-slider">
+        <img id="product-image"
+            src="{{ url_for('static', filename='images/products/' + product['image']) }}"
+            alt="{{ product['name'] }}"
+            onclick="handleImageClick(event)">
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+        <h2>{{ product['name'] }}</h2>
+        <p><strong>Cena:</strong> {{ product['cena'] }} €</p>
+        <p><strong>Pieejamība:</strong> {{ product['pieejamiba'] }}</p>
+        <p><strong>Svars (g):</strong> {{ product['svars'] }}</p>
+        <form method="POST" action="{{ url_for('add_to_cart', product_id=product['id']) }}">
+            <label for="quantity">Daudzums:</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" class="cart-qty-input">
+            <button type="submit" class="add-to-cart-btn">🛒 Pievienot grozam</button>
+        </form>
+    
+
+        <div class="dialogue-box">
+            <h4>🗨️ Apraksts</h4>
+            <p style="white-space: pre-line;">{{ product['apraksts'] }}</p>
+        </div>
+
+        <a href="/produkti">⬅ Atpakaļ uz sarakstu</a>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'">
+    <img id="lightbox-img" src="">
+</div>
+
+<!-- Scripts -->
+{% set ns = namespace(urls=[url_for('static', filename='images/products/' + product['image'])]) %}
+{% for img in images %}
+    {% set _ = ns.urls.append(url_for('static', filename='images/products/' + img['image'])) %}
+{% endfor %}
+
+<script>
+    let images = {{ ns.urls | tojson }};
+    let currentIndex = 0;
+
+    function handleImageClick(e) {
+        const img = document.getElementById("product-image");
+        const clickX = e.offsetX;
+        const width = img.offsetWidth;
+
+        if (e.ctrlKey || e.altKey) {
+            openLightbox(img.src);
+            return;
+        }
+
+        if (clickX > width / 2) {
+            currentIndex = (currentIndex + 1) % images.length;
+        } else {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+        }
+
+        img.src = images[currentIndex];
+    }
+
+    function openLightbox(src) {
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImg = document.getElementById("lightbox-img");
+        lightboxImg.src = src;
+        lightbox.style.display = "flex";
+    }
+</script>
+{% endblock %}
